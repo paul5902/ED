@@ -1,0 +1,200 @@
+﻿TP Entrepôt de données
+
+
+Exercice 1 
+
+a)
+
+select emp.deptno,emp.ename,emp.sal, rank() OVER (partition by emp.deptno ORDER BY SAL desc, emp.deptno) as rang
+from emp
+where emp.deptno in (10,30)
+group by emp.deptno,emp.ename,emp.sal
+order by deptno, sal desc;
+
+Résultat : 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+b)
+
+select emp.deptno,emp.ename,emp.sal, dense_rank() OVER (partition by emp.deptno ORDER BY SAL desc, emp.deptno) as rang
+from emp
+where emp.deptno in (10,30)
+group by emp.deptno,emp.ename,emp.sal
+order by deptno, sal desc;
+
+Résultat : 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+c)
+
+select emp.deptno, emp.sal, dense_rank() OVER (partition by emp.deptno ORDER BY SAL desc, emp.deptno) as rang
+from emp 
+where emp.deptno in (10,20)
+group by emp.deptno,emp.sal
+order by deptno, sal desc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+d) 
+1ère méthode :
+select job, sum(sal) as tot_sal_job
+from emp
+group by job;
+
+Résultat : 
+
+
+
+
+
+
+
+
+
+
+
+2ème méthode :
+select distinct job, sum(sal) OVER (partition by job)
+from emp;
+
+
+
+
+
+
+
+
+
+
+
+e) Différence entre GROUP BY and PARTITION BY :
+
+La fonction GROUP BY réduit le nombre de lignes retournées en regroupant les résultats par rapport à un critère.
+
+PARTITION BY va découper le résultat sur un critère tout en laissant autant de lignes que de critères différents.
+
+
+f) select deptno, job, sum(sal) as total
+from emp
+group by grouping sets ((deptno,job),(deptno),());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+g)
+
+select 
+  case when deptno is null then 'TousDep' else TO_CHAR(deptno) end deptno,
+  case when job is null then 'TousEmployés' else job end job,
+  sum(sal) as total
+from emp
+group by grouping sets ((deptno,job),(deptno),());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Exercice 2 :
+
+1)
+
+select annee, cl_r, category, avg(ventes.pu * ventes.QTE)
+from ventes join temps on ventes.tid = temps.TID join produits on produits.PID = ventes.PID join clients on ventes.CID = clients.CL_ID
+where annee in (2009,2010)
+group by grouping sets((annee,cl_r,category),(annee,cl_r),(annee),());
+
+
+
+2) 
+
+select annee, cl_r, category, avg(ventes.pu * ventes.QTE)
+from ventes join temps on ventes.tid = temps.TID join produits on produits.PID = ventes.PID join clients on ventes.CID = clients.CL_ID
+where annee in (2009,2010)
+group by cube(annee,cl_r,category);
+
+
+
+3)
+
